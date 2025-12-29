@@ -27,16 +27,16 @@ public class InteractCore : MonoBehaviour
             Debug.LogWarning($"{name} 沒有掛任何互動邏輯");
         }
     }
-    void OnMouseDown()
-    {
-        if (!interactable) return;
+    //void OnMouseDown()
+    //{
+    //    if (!interactable) return;
 
-        if (fixedLogic)
-            fixedLogic.OnPress();
+    //    if (fixedLogic)
+    //        fixedLogic.();
 
-        if (rhythmLogic)
-            rhythmLogic.OnPress();
-    }
+    //    if (rhythmLogic)
+    //        rhythmLogic.OnPress();
+    //}
 
     public void SetInteractable(bool value)
     {

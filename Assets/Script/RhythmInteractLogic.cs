@@ -1,48 +1,113 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class RhythmInteractLogic : MonoBehaviour
 {
     [Header("變化組的回饋方式")]
+    public GameObject ChildSet;
     public Light2D TargetLight;
     public Renderer TargetRenderer;
-    public int combo = 0;
-    // Start is called before the first frame update
+
+
+    [Header("亮度設定")]
+    public float minIntensity = 0.5f;    // 失敗時亮度
+    public float maxIntensity = 5f;      // combo 最大亮度
+    public float intensityStep = 0.5f;   // 每次成功增加多少
+
+    [Header("節奏管理")]
+    public BeatDataS0 beatData;
+    public RhythmManager rhythmManager;
+    float perfectRange;
+    float goodRange;
+
+
+    public float combo = 0f;
+    bool isLighting = false;
+
+    [Header("漸變設定")]
+    public float fadeTime = 0.3f;
+    public float stayTime = 1f;
+
     void Reset()
     {
-        TargetRenderer = TargetLight.GetComponent<Renderer>();
+        TargetRenderer = ChildSet.GetComponent<Renderer>();
     }
+
     void Start()
     {
-        TargetRenderer = TargetLight.GetComponent<Renderer>();
-    }
+        TargetRenderer = ChildSet.GetComponent<Renderer>();
+        if (TargetLight) TargetLight.intensity = 0f;
 
-    public void OnPress()
-    {
-        if (!RhythmManager.Instance) return;
-
-        if (RhythmManager.Instance.IsOnBeat())
+        if (rhythmManager && beatData)
         {
-            combo++;
-            ApplyComboEffect();
+            rhythmManager.SetBeatData(beatData.beats);
+        }
+
+    }
+    void OnMouseDown()
+    {
+        if (!rhythmManager || isLighting) return;
+
+        float dist = rhythmManager.GetBeatDistance();
+        float targetIntensity;
+
+        perfectRange = rhythmManager.tolerance;
+        goodRange = rhythmManager.tolerance * 2f;
+
+        if (dist <= perfectRange)
+        {
+            // Perfect
+            combo += 1f;
+            targetIntensity = Mathf.Clamp(combo * intensityStep, 0f, maxIntensity);
+        }
+        else if (dist <= goodRange)
+        {
+            // Good（接近）
+            combo += 0.5f;
+            targetIntensity = Mathf.Clamp(combo * intensityStep, 0f, maxIntensity);
         }
         else
         {
-            combo = 0;
-            ResetEffect();
+            // Miss
+            combo = 0f;
+            targetIntensity = minIntensity;
         }
+
+        StartCoroutine(LightRoutine(targetIntensity));
     }
 
-    void ApplyComboEffect()
+    IEnumerator LightRoutine(float targetIntensity)
     {
-        float intensity = Mathf.Clamp(combo * 0.5f, 0f, 5f);
-        TargetRenderer.material.SetFloat("_Emission", intensity);
+        isLighting = true;
+
+        // 淡入到計算亮度
+        yield return StartCoroutine(FadeEmission(0f, targetIntensity, fadeTime));
+
+        // 停留
+        yield return new WaitForSeconds(stayTime);
+
+        // 淡出回 0
+        yield return StartCoroutine(FadeEmission(targetIntensity, 0f, fadeTime));
+
+        isLighting = false;
     }
 
-    void ResetEffect()
+    IEnumerator FadeEmission(float from, float to, float duration)
     {
-        TargetRenderer.material.SetFloat("_Emission", 0f);
+        float t = 0f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float lerp = t / duration;
+            TargetRenderer.material.SetFloat("_Emission", Mathf.Lerp(from, to, lerp));
+            if (TargetLight)
+                TargetLight.intensity = Mathf.Lerp(from, to, lerp);
+            yield return null;
+        }
+
+        TargetRenderer.material.SetFloat("_Emission", to);
+        if (TargetLight) TargetLight.intensity = to;
     }
 }
