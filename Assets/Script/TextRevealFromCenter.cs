@@ -19,7 +19,7 @@ public class TextRevealFromCenter : MonoBehaviour
     }
     void Start()
     {
-        StartCoroutine(Reveal());
+        
     }
 
     void Update()
@@ -27,9 +27,10 @@ public class TextRevealFromCenter : MonoBehaviour
 
     }
 
-    IEnumerator Reveal()
+    public IEnumerator Reveal()
     {
         menuScript.illustrateButton.SetActive(false);
+        menuScript.illustrateText.SetActive(false);
         yield return new WaitForSeconds(0.5f);
         float t = 0f;
         maskRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 0f);
@@ -49,8 +50,10 @@ public class TextRevealFromCenter : MonoBehaviour
 
         //顯示說明按紐
         menuScript.illustrateButton.SetActive(true);
+        menuScript.illustrateText.SetActive(true);
 
         // 3. 開始無限閃爍
-        StartCoroutine(menuScript.Blink(menuScript.illustrateButton));
+        StopCoroutine(GameManager.Instance.Blink(menuScript.illustrateText));
+        StartCoroutine(GameManager.Instance.Blink(menuScript.illustrateText));
     }
 }

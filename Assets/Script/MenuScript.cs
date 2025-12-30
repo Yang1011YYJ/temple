@@ -9,6 +9,7 @@ public class MenuScript : MonoBehaviour
 {
     public TextRevealFromCenter textRevealFromCenter;
     public GameObject illustrateButton;
+    public GameObject illustrateText;
     public GameObject illustratePanel;
     public GameObject StartButton;
     public GameObject UIAll;
@@ -23,8 +24,11 @@ public class MenuScript : MonoBehaviour
     void Start()
     {
         textRevealFromCenter = FindAnyObjectByType<TextRevealFromCenter>();
-        illustratePanel.SetActive(false);
-        illustrateButton.SetActive(false);
+        if (illustratePanel != null) illustratePanel.SetActive(false);
+        if (illustrateButton != null) illustrateButton.SetActive(false);
+        if (illustrateText != null) illustrateText.SetActive(false);
+
+        CloseUI();
 
         StartCoroutine(MenuStart());
     }
@@ -46,65 +50,18 @@ public class MenuScript : MonoBehaviour
         Application.Quit(); //關閉應用程式
     }
 
-    public void NextScene()
-    {
-        StartCoroutine(FadeOutGlobalLightandSceneChange(1));
-        Fade(UIAll, 1, 0, 1, null);
-    }
-
     public IEnumerator MenuStart()
     {
+        GameManager.Instance.currentBlackPanel.SetActive(true);
+        GameManager.Instance.Fade(GameManager.Instance.currentBlackPanel, 1, 0, 1, () =>
+        {
+            GameManager.Instance.currentBlackPanel.SetActive(false);
+        });
+        StartCoroutine(textRevealFromCenter.Reveal());
         yield return new WaitUntil(() => illustratePanel.activeSelf);
         yield return new WaitForSeconds(1);
 
-        StartCoroutine(Blink(StartButton));
-    }
-
-    public IEnumerator Blink(GameObject gameObject)
-    {
-        while (true)
-        {
-            Fade(gameObject, 0, 1, 0.8f, null);
-            yield return new WaitForSeconds(1.5f);
-            Fade(gameObject, 1, 0, 0.8f, null);
-            yield return new WaitForSeconds(1.5f);
-
-        }
-    }
-    public void Fade(GameObject gameObject, float start, float end, float duration, Action onComplete)
-    {
-        StartCoroutine(FadeI(gameObject, start, end, duration, onComplete));
-    }
-    IEnumerator FadeOutGlobalLightandSceneChange(float duration)
-    {
-        float time = 0f;
-        float startIntensity = Globalight2D.intensity;
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            Globalight2D.intensity = Mathf.Lerp(startIntensity, 0f, time / duration);
-            yield return null;
-        }
-
-        Globalight2D.intensity = 0f;
-
-        yield return new WaitForSeconds(1);
-        SceneManager.LoadScene("01");
-    }
-
-    public IEnumerator FadeI(GameObject gameObject, float start, float end, float duration, Action onComplete)
-    {
-        float time = 0f;
-        CanvasGroup canvasG = gameObject.GetComponent<CanvasGroup>();
-
-        canvasG.alpha = start;
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            canvasG.alpha = Mathf.Lerp(start, end, time / duration);
-            yield return null;
-        }
-        canvasG.alpha = end;
+        StopCoroutine(GameManager.Instance.Blink(StartButton));
+        StartCoroutine(GameManager.Instance.Blink(StartButton));
     }
 }
