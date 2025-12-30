@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class PlayTimeRecorder : MonoBehaviour
     // 開始計時
     public void StartTiming()
     {
+        Debug.Log("1");
         startTime = Time.time;
         isTiming = true;
     }
@@ -34,9 +36,14 @@ public class PlayTimeRecorder : MonoBehaviour
     {
         string content = $"遊玩時間:{seconds}秒";
 
+        // 取得目前時間（年月日_時分秒）
+        string timeStamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+        string fileName = $"PlayTime_{timeStamp}.txt";
+
         string path = Path.Combine(
             Application.persistentDataPath,
-            "PlayTime.txt"
+            fileName
         );
 
         File.WriteAllText(path, content);

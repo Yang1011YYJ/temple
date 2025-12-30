@@ -13,6 +13,11 @@ public class MenuScript : MonoBehaviour
     public GameObject StartButton;
     public GameObject UIAll;
 
+    [Header("UI")]
+    public GameObject SettingPanel;
+    public GameObject EndGameButton;
+    public GameObject EndGameCheckPanel;
+
     public Light2D Globalight2D;
     // Start is called before the first frame update
     void Start()
@@ -28,6 +33,17 @@ public class MenuScript : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void CloseUI()
+    {
+        EndGameCheckPanel.SetActive(false);
+        SettingPanel.SetActive(false);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit(); //關閉應用程式
     }
 
     public void NextScene()
