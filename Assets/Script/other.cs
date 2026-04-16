@@ -12,13 +12,15 @@ public class other : MonoBehaviour
     public GameObject EndGameButton;
     public GameObject EndGameCheckPanel;
     public Button endButton;
-
-
+    public GameObject ExplainPanel;
+    public GameObject VideoExplainPanel;
 
     public void CloseUI()
     {
         EndGameCheckPanel.SetActive(false);
         SettingPanel.SetActive(false);
+        ExplainPanel.SetActive(false);
+        VideoExplainPanel.SetActive(false);
         GameManager.Instance.currentBlackPanel.SetActive(false);
     }
 
@@ -26,6 +28,8 @@ public class other : MonoBehaviour
     {
         if (EndGameCheckPanel != null) EndGameCheckPanel.SetActive(false);
         if (SettingPanel != null) SettingPanel.SetActive(false);
+        if(ExplainPanel != null) ExplainPanel.SetActive(false);
+        if(VideoExplainPanel != null) VideoExplainPanel.SetActive(false);
 
         if (GameManager.Instance.currentBlackPanel != null)
         {

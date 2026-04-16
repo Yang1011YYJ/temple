@@ -18,6 +18,7 @@ public class MenuScript : MonoBehaviour
     public GameObject SettingPanel;
     public GameObject EndGameButton;
     public GameObject EndGameCheckPanel;
+    public GameObject VideoExplainPanel;
 
     public Light2D Globalight2D;
     // Start is called before the first frame update
@@ -27,6 +28,7 @@ public class MenuScript : MonoBehaviour
         if (illustratePanel != null) illustratePanel.SetActive(false);
         if (illustrateButton != null) illustrateButton.SetActive(false);
         if (illustrateText != null) illustrateText.SetActive(false);
+        if(VideoExplainPanel!=null) VideoExplainPanel.SetActive(false);
 
         CloseUI();
 
@@ -43,6 +45,7 @@ public class MenuScript : MonoBehaviour
     {
         EndGameCheckPanel.SetActive(false);
         SettingPanel.SetActive(false);
+        VideoExplainPanel.SetActive(false);
     }
 
     public void ExitGame()
